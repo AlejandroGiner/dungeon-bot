@@ -51,7 +51,7 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='Joe'))
     print(f'Successfully logged in and booted.')
 
-    for extension in ['timetravel', 'poll']:
+    for extension in ['timetravel', 'poll', 'activityvoter']:
         await bot.load_extension(extension)
 
 

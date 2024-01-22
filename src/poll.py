@@ -1,5 +1,4 @@
 import discord
-import table2ascii
 
 from discord import app_commands
 from discord.ext import commands
@@ -82,14 +81,20 @@ class PollCog(commands.Cog):
     @commands.command(name="embed", aliases=['e'])
     async def _embed(self, ctx):
         e = discord.Embed(color=discord.Color.dark_gold())
-        e.set_footer(text='im a footer')
-        e.set_author(name='im the author')
-        #e.add_field(name='Phasmophobia', value='❌: 0  ✅: 100')
-        #e.add_field(name='Team Fortress 2', value='❌: 999  ✅: 0')
-        #for i in range(3):
-        #    e.add_field(name='Hoi4 minecraft', value='❌: 1e69  ✅: -7')
-        e.add_field(name='A',value='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',inline=True)
-        e.set_image(url='https://cdn.discordapp.com/attachments/1126052272015683625/1181361802148327534/image.png')
+        e.set_footer(text='Footer')
+        e.set_author(name='Author')
+        e.add_field(name='7 Days to Die',value='✅: 5  ❌: 1')
+        e.add_field(name='Lethal Company',value='✅: 2  ❌: 3')
+        e.add_field(name='Rimworld Multiplayer',value='✅: 2  ❌: 3')
+        e.add_field(name='Call to Arms Gates of Hell: Ostfront', value='✅: 2  ❌: 3')
+        e.add_field(name='a', value='✅ 2  ❌ 3')
+        e.add_field(name='b', value='✅ 2  ❌ 3')
+        e.add_field(name='c', value='✅ 2  ❌ 3')
+        e.add_field(name='d', value='✅ 2  ❌ 3')
+        e.add_field(name='e', value='✅ 2  ❌ 3')
+        e.add_field(name='f', value='✅ 2  ❌ 3')
+
+        #e.set_image(url='https://static.wikia.nocookie.net/hunterxhunter/images/c/c2/HxH2011_EP63_Binolt_as_a_child.png/revision/latest?cb=20230518010750')
         await ctx.send(embed=e)
 
 async def setup(bot):
