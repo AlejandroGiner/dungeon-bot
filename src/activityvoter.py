@@ -24,6 +24,47 @@ def getActivity(cat, act, cur, *, full = False):
 	return result[0]
 
 
+def twentyFiveCategories(cat, cur):
+	try:
+		cur.execute('INSERT INTO category(name) VALUES(?)', (cat,))
+	except Exception as e:
+		print(f'Error: {e}')
+		return
+
+
+class ActView(View):
+	def __init__(self):
+		super().__init__()
+
+	@discord.ui.button(label="", style=discord.ButtonStyle.secondary, emoji="⬅")
+	async def left_button_callback(self, interaction, button):
+		pass
+
+	@discord.ui.button(label='', style=discord.ButtonStyle.secondary, emoji='➡')
+	async def right_button_callback(self, interaction, button):
+		pass
+
+	@discord.ui.select(placeholder='Select an activity to vote on:', options=[
+		discord.SelectOption(label='Project Zomboid', description=''),
+		discord.SelectOption(label='Terraria', description=''),
+		discord.SelectOption(label='Fart Simulator', description='')
+	])
+	async def on_select(self, interaction, select):
+		await interaction.response.send_message(f'You selected: {select.values[0]}', ephemeral=True)
+
+	@discord.ui.button(label="", style=discord.ButtonStyle.green, emoji='✔')
+	async def yes_button_callback(self, interaction, button):
+		pass
+
+	@discord.ui.button(label="", style=discord.ButtonStyle.red, emoji='✖')
+	async def no_button_callback(self, interaction, button):
+		pass
+
+	@discord.ui.button(label="", style=discord.ButtonStyle.blurple, emoji='❔')
+	async def info_button_callback(self, interaction, button):
+		pass
+
+
 class ListView(View):
 	def __init__(self, cursor):
 		super().__init__()
@@ -298,6 +339,24 @@ class ActivityVoter(commands.Cog):
 		except Exception as e:
 			await ctx.send(f'Error: {e}')
 
+	@commands.command(name='dropdowntest')
+	async def _dropdowntest(self, ctx):
+
+		select = discord.ui.Select(
+			placeholder='Select an option',
+			options=[
+				discord.SelectOption(label='first', description='firstdesc'),
+				discord.SelectOption(label='second', description='seconddesc')
+			])
+		view = discord.ui.View()
+		view.add_item(select)
+		await ctx.send('Please select an option:', view=view)
+
+		async def on_select(interaction):
+			await interaction.response.send_message(f'You selected: {select.values[0]}')
+
+		select.callback = on_select
+
 	@commands.command(name='fieldtest', aliases=['f'])
 	async def _embed(self, ctx):
 		e = discord.Embed(color=discord.Color.dark_gold())
@@ -317,6 +376,21 @@ class ActivityVoter(commands.Cog):
 		# e.set_image(url='https://static.wikia.nocookie.net/hunterxhunter/images/c/c2/HxH2011_EP63_Binolt_as_a_child.png/revision/latest?cb=20230518010750')
 		await ctx.send(embed=e)
 
+	@commands.command(name='25categories')
+	async def _25categories(self, ctx, cat):
+		cur = self.conn.cursor()
+		for i in range(25):
+			fart = f'{cat}{i}'
+			twentyFiveCategories(fart, cur)
+		self.conn.commit()
+		await ctx.send('Done')
+
+	@commands.command(name='mockup')
+	async def _mockup(self, ctx):
+		cur = self.conn.cursor()
+		e = await pageEmbedBuilder(cur, 1)
+		view = ActView()
+		await ctx.send(embed=e, view=view)
 
 async def setup(bot):
 	await bot.add_cog(ActivityVoter(bot))
