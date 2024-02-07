@@ -7,32 +7,39 @@ from timezonefinder import TimezoneFinder
 import re
 
 
-def timeparser(time_string):
-    time_string = re.sub(r'[\W_]+', '', time_string)
+def parse_time(time_string: str) -> tuple[int, int]:
+    """Parses a string representing a time, which can be in 12-hour or 24-hour format, into a tuple of hours and
+    minutes.
+    :param time_string: A string representing a time. It can have between one and four digits, followed by an optional
+    AM or PM. It can have any number of whitespaces.
+    :return: A tuple of two numbers, the first one representing the hour (24-hour format) and the minute.
+    """
 
-    if not re.match('^[0-9]{1,4}([ap]m)?$', time_string):
+    # Get rid of all whitespace and set to lowercase
+    time_string = ''.join(time_string.split()).lower()
+
+    # Build a match with a regex for the required format, separated in groups
+    match = re.fullmatch('^([0-9]{1,2}?)([0-9]{0,2})([ap]m)?$', time_string)
+
+    # Check if the string matches the required format
+    if not match:
         raise ValueError("This time isn't valid")
 
-    num_of_num = sum([c.isdigit() for c in time_string])
-
-    # The hour is either the first number or the first two numbers
-    hour = int(time_string[:2]) if num_of_num in (2, 4) else int(time_string[:1])
+    hour, minute = match.group(1, 2)
+    am_or_pm = match.group(3)
 
     if hour > 23:
-        raise ValueError("Hour above 23")
-
-    # The minute is either the last two numbers or zero
-    minute = int(time_string[num_of_num-2:num_of_num]) if num_of_num in (3, 4) else 0
+        raise ValueError("Hour is above 23")
 
     if minute > 59:
-        raise ValueError("Minute above 59")
+        raise ValueError("Minute is above 59")
 
     if hour > 12:
         return hour, minute
     if hour == 12:
-        return hour + (12 if 'am' in time_string else 0), minute
+        return hour + (12 if am_or_pm == 'am' else 0), minute
     if hour < 12:
-        return hour + (12 if 'pm' in time_string else 0), minute
+        return hour + (12 if am_or_pm == 'pm' else 0), minute
 
 
 def get_time(hours, minutes, tz):
@@ -62,7 +69,7 @@ class TimeTravel(commands.Cog):
         # time_list = list(map(lambda x: int(x), time_str.split(':')))
 
         try:
-            hours, minutes = timeparser(time_str)
+            hours, minutes = parse_time(time_str)
         except ValueError:
             await ctx.send(f'Wrong format for time. Time=`{time_str}`')
             return
